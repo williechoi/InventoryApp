@@ -20,7 +20,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.inventory.data.ItemsRepository
+import com.example.inventory.ui.inventoryApplication
 
 /**
  * View Model to validate and insert items in the Room database.
@@ -39,5 +42,14 @@ class ItemEntryViewModel(private val itemsRepository: ItemsRepository) : ViewMod
      */
     fun updateUiState(newItemUiState: ItemUiState) {
         itemUiState = newItemUiState.copy( actionEnabled = newItemUiState.isValid())
+    }
+
+    suspend fun saveItem() {
+        /**
+         * Only validated inputs are to be saved to the database.
+         */
+        if (itemUiState.isValid()) {
+            itemsRepository.insertItem(itemUiState.toItem())
+        }
     }
 }
