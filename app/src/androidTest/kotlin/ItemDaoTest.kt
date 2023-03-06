@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,8 +46,32 @@ class ItemDaoTest {
     fun daoGetAllItems_returnsAllItemsFromDB() = runBlocking {
         addTwoItemsToDb()
         val allItems = itemDao.getAllItems().first()
-        Assert.assertEquals(allItems[0], item1)
-        Assert.assertEquals(allItems[1], item2)
+        assertEquals(allItems[0], item1)
+        assertEquals(allItems[1], item2)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoUpdateItems_updatesItemsInDB() = runBlocking {
+        addTwoItemsToDb()
+        itemDao.update(Item(1, "Apples", 15.0, 25))
+        itemDao.update(Item(2, "Bananas", 5.0, 87))
+
+        val allItems = itemDao.getAllItems().first()
+        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25))
+        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 87))
+
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoDeleteItems_deleteAllItemsFromDB()  = runBlocking {
+        addTwoItemsToDb()
+        itemDao.delete(item1)
+        itemDao.delete(item2)
+
+        val allItems = itemDao.getAllItems().first()
+        assertTrue(allItems.isEmpty())
     }
 
     @Before
